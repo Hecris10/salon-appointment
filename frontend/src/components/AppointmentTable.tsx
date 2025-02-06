@@ -1,9 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 import { motion } from "framer-motion";
 import { Edit, Search, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import DeleteAppointmentModal from "./DeleteAppointmentModal";
+import EditAppointmentModal from "./EditAppointmentModal";
 
 export default function AppointmentsTable() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -15,6 +14,10 @@ export default function AppointmentsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -101,6 +104,34 @@ export default function AppointmentsTable() {
     });
     setFilteredAppointments(filtered);
   }, [searchTerm, dateFilter, serviceFilter, appointments]);
+
+  const handleDeleteClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setDeleteModalOpen(true);
+  };
+
+  const handleEditClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteAppointment = (id: number) => {
+    setAppointments(
+      appointments.filter((appointment) => appointment.id !== id)
+    );
+    setDeleteModalOpen(false);
+  };
+
+  const handleUpdateAppointment = (updatedAppointment: Appointment) => {
+    setAppointments(
+      appointments.map((appointment) =>
+        appointment.id === updatedAppointment.id
+          ? updatedAppointment
+          : appointment
+      )
+    );
+    setEditModalOpen(false);
+  };
 
   if (isLoading) {
     return <div className="text-center py-8">Loading appointments...</div>;
@@ -199,10 +230,16 @@ export default function AppointmentsTable() {
                 {appointment.stylist}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button className="text-indigo-600 hover:text-indigo-900 mr-2">
+                <button
+                  className="text-indigo-600 hover:text-indigo-900 mr-2"
+                  onClick={() => handleEditClick(appointment)}
+                >
                   <Edit size={18} />
                 </button>
-                <button className="text-red-600 hover:text-red-900">
+                <button
+                  className="text-red-600 hover:text-red-900"
+                  onClick={() => handleDeleteClick(appointment)}
+                >
                   <Trash2 size={18} />
                 </button>
               </td>
@@ -210,6 +247,22 @@ export default function AppointmentsTable() {
           ))}
         </tbody>
       </table>
+      {selectedAppointment && (
+        <>
+          <DeleteAppointmentModal
+            isOpen={deleteModalOpen}
+            onClose={() => setDeleteModalOpen(false)}
+            onDelete={() => handleDeleteAppointment(selectedAppointment.id)}
+            appointment={selectedAppointment}
+          />
+          <EditAppointmentModal
+            isOpen={editModalOpen}
+            onClose={() => setEditModalOpen(false)}
+            onUpdate={handleUpdateAppointment}
+            appointment={selectedAppointment}
+          />
+        </>
+      )}
     </div>
   );
 }

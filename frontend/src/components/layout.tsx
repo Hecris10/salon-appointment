@@ -22,14 +22,14 @@ export const Layout = () => {
                 Appointments
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/clients"
                 className="text-purple-600 hover:text-purple-800 font-medium"
               >
                 Clients
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 to="/services"
@@ -38,14 +38,14 @@ export const Layout = () => {
                 Services
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/staff"
                 className="text-purple-600 hover:text-purple-800 font-medium"
               >
                 Staff
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </header>
