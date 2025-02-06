@@ -177,6 +177,21 @@ export const resolvers = {
       _: unknown,
       { id }: { id: string }
     ): Promise<boolean> => {
+      // Delete related appointments first
+      await prisma.appointment.deleteMany({
+        where: {
+          service: {
+            salonId: id,
+          },
+        },
+      });
+
+      // Delete related services
+      await prisma.service.deleteMany({
+        where: { salonId: id },
+      });
+
+      // Then delete the salon
       await prisma.salon.delete({ where: { id } });
       return true;
     },

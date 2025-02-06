@@ -26,7 +26,7 @@ export const useAppointments = (queryParams?: {
     fetchPolicy: "cache-and-network",
   });
 
-  console.log({ data: data?.getAppointments });
+
 
   const [addAppointment] = useMutation(ADD_APPOINTMENT, {
     onCompleted: () => {
