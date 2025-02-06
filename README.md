@@ -104,6 +104,15 @@ Ensure you have **Docker** installed before proceeding.
    ```
 3. Open `http://localhost:3000` in your browser.
 
+### Initial Setup
+1. Create a salon:
+   - Navigate to the application in your browser.
+   -Add a new salon.
+
+2. Add services:
+   - After creating a salon, go to the "Services" page.
+   - Add services that your salon offers.
+
 ## Approach & Explanation
 This project follows a **modern full-stack development approach** combining **GraphQL, PostgreSQL, React, and TypeScript** for a seamless user experience.
 
