@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
+import NewAppointmentButton from "../components/appointments/NewAppointmentButton";
+import UpcomingAppointments from "../components/appointments/UpcomingAppointments";
 import DashboardSummary from "../components/DashboardSummary";
-import NewAppointmentButton from "../components/NewAppointmentButton";
-import UpcomingAppointments from "../components/UpcomingAppointments";
 
 export const MainPage = () => {
   return (

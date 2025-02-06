@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import AddServiceModal from "./AddServiceModal";
-import DeleteServiceModal from "./DeleteServiceModal";
-import EditServiceModal from "./EditServiceModal";
+import AddServiceModal from "../modals/service/AddServiceModal";
+import DeleteServiceModal from "../modals/service/DeleteServiceModal";
+import EditServiceModal from "../modals/service/EditServiceModal";
 
 export default function ServicesTable() {
   const [services, setServices] = useState<Service[]>([]);

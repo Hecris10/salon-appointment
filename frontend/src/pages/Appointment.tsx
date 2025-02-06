@@ -1,4 +1,4 @@
-import AppointmentsTable from "../components/AppointmentTable";
+import AppointmentsTable from "../components/appointments/AppointmentTable";
 
 export const Appointments = () => (
   <div className="container mx-auto px-4 py-8">

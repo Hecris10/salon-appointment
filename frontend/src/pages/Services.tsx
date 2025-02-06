@@ -1,4 +1,4 @@
-import ServicesTable from "../components/ServicesTable";
+import ServicesTable from "../components/services/ServicesTable";
 
 export const Services = () => (
   <div className="container mx-auto px-4 py-8">

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import AppointmentModal from "./AppointmentModal";
+import AppointmentModal from "../modals/appointment/AppointmentModal";
 
 export default function NewAppointmentButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import DeleteAppointmentModal from "./DeleteAppointmentModal";
-import EditAppointmentModal from "./EditAppointmentModal";
+import DeleteAppointmentModal from "../modals/appointment/DeleteAppointmentModal";
+import EditAppointmentModal from "../modals/appointment/EditAppointmentModal";
 
 export default function AppointmentsTable() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);

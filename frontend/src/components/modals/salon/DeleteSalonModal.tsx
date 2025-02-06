@@ -1,19 +1,20 @@
-import { AnimatePresence, motion } from "framer-motion";
-import type { Service } from "../types";
+"use client";
 
-interface DeleteServiceModalProps {
+import { AnimatePresence, motion } from "framer-motion";
+
+interface DeleteSalonModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
-  service: Service;
+  salon: Salon;
 }
 
-export default function DeleteServiceModal({
+export default function DeleteSalonModal({
   isOpen,
   onClose,
   onDelete,
-  service,
-}: DeleteServiceModalProps) {
+  salon,
+}: DeleteSalonModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -30,10 +31,11 @@ export default function DeleteServiceModal({
             className="bg-white rounded-lg p-6 w-full max-w-md"
           >
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-              Delete Service
+              Delete Salon
             </h2>
             <p className="mb-6 text-gray-600">
-              Are you sure you want to delete the service "{service.name}"?
+              Are you sure you want to delete the salon "{salon.name}"? This
+              action cannot be undone.
             </p>
             <div className="flex justify-end space-x-2">
               <button
