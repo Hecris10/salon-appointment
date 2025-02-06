@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { useAppointments } from "../../../hooks/useAppointments";
 
 export default function AppointmentModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function AppointmentModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { addAppointment } = useAppointments();
   const [customerName, setCustomerName] = useState("");
   const [service, setService] = useState("");
   const [time, setTime] = useState("");
@@ -25,11 +27,14 @@ export default function AppointmentModal({
     setSubmitMessage(null);
 
     try {
-      // Simulating API call with a delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // TODO: Implement the actual API call to create a new appointment
-      console.log("New appointment:", { customerName, service, time });
+      await addAppointment({
+        variables: {
+          salonId: "1", // Replace with actual salonId
+          customerName,
+          serviceName: service,
+          appointmentTime: time,
+        },
+      });
 
       setSubmitMessage({
         type: "success",

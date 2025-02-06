@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSalons } from "../../hooks/useSalons";
 import type { Salon } from "../../types";
 import AddSalonModal from "../modals/salon/AddSalonModal";
 import DeleteSalonModal from "../modals/salon/DeleteSalonModal";
@@ -7,76 +8,57 @@ import EditSalonModal from "../modals/salon/EditSalonModal";
 import SalonCard from "./SalonCard";
 
 export default function SalonList() {
-  const [salons, setSalons] = useState<Salon[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { loading, error, data, addSalon, updateSalon, deleteSalon } =
+    useSalons();
+
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
 
-  useEffect(() => {
-    const fetchSalons = async () => {
-      try {
-        // Simulating API call with a delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockSalons: Salon[] = [
-          {
-            id: 1,
-            name: "Glamour Salon",
-            location: "123 Main St, City A",
-            services: ["Haircut", "Coloring", "Styling"],
-          },
-          {
-            id: 2,
-            name: "Chic Styles",
-            location: "456 Elm St, City B",
-            services: ["Manicure", "Pedicure", "Facial"],
-          },
-          {
-            id: 3,
-            name: "Elegant Cuts",
-            location: "789 Oak St, City C",
-            services: ["Haircut", "Beard Trim", "Shave"],
-          },
-        ];
-        setSalons(mockSalons);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to fetch salons. Please try again later.");
-        setIsLoading(false);
-      }
-    };
-
-    fetchSalons();
-  }, []);
-
-  const handleAddSalon = (newSalon: Omit<Salon, "id">) => {
-    const salonWithId = { ...newSalon, id: salons.length + 1 };
-    setSalons([...salons, salonWithId]);
-    setAddModalOpen(false);
+  const handleAddSalon = async (newSalon: Omit<Salon, "id">) => {
+    try {
+      await addSalon({
+        variables: { name: newSalon.name, location: newSalon.location },
+      });
+      console.log("Added new salon: ", newSalon);
+    } catch (error) {
+      console.error("Error adding salon: ", error);
+    }
   };
 
-  const handleEditSalon = (updatedSalon: Salon) => {
-    setSalons(
-      salons.map((salon) =>
-        salon.id === updatedSalon.id ? updatedSalon : salon
-      )
-    );
-    setEditModalOpen(false);
+  const handleEditSalon = async (updatedSalon: Salon) => {
+    try {
+      await updateSalon({
+        variables: {
+          id: updatedSalon.id,
+          name: updatedSalon.name,
+          location: updatedSalon.location,
+        },
+      });
+      console.log("Updated salon with id: ", updatedSalon.id);
+    } catch (error) {
+      console.error("Error updating salon: ", error);
+    }
   };
 
-  const handleDeleteSalon = (id: number) => {
-    setSalons(salons.filter((salon) => salon.id !== id));
-    setDeleteModalOpen(false);
+  const handleDeleteSalon = async (id: string) => {
+    try {
+      await deleteSalon({ variables: { id } });
+      console.log("Deleted salon with id: ", id);
+    } catch (error) {
+      console.error("Error deleting salon: ", error);
+    }
   };
 
-  if (isLoading) {
+  if (loading) {
     return <div className="text-center py-8">Loading salons...</div>;
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-600">{error}</div>;
+    return (
+      <div className="text-center py-8 text-red-600">{error?.message}</div>
+    );
   }
 
   return (
@@ -92,7 +74,12 @@ export default function SalonList() {
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {salons.map((salon) => (
+        {data?.getSalons.length === 0 && (
+          <div className="text-center text-gray-600 py-8">
+            No salons found. Please add a new salon.
+          </div>
+        )}
+        {data?.getSalons.map((salon) => (
           <SalonCard
             key={salon.id}
             salon={salon}
@@ -123,7 +110,9 @@ export default function SalonList() {
           <DeleteSalonModal
             isOpen={deleteModalOpen}
             onClose={() => setDeleteModalOpen(false)}
-            onDelete={() => handleDeleteSalon(selectedSalon.id)}
+            onDelete={() =>
+              selectedSalon && handleDeleteSalon(selectedSalon.id)
+            }
             salon={selectedSalon}
           />
         </>

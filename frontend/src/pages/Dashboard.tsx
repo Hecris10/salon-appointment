@@ -1,9 +1,9 @@
 import { NavLink } from "react-router";
 import NewAppointmentButton from "../components/appointments/NewAppointmentButton";
 import UpcomingAppointments from "../components/appointments/UpcomingAppointments";
-import DashboardSummary from "../components/DashboardSummary";
+import DashboardSummary from "../components/dashboard/DashboardSummary";
 
-export const MainPage = () => {
+export const Dashboard = () => {
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">

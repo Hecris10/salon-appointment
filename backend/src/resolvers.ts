@@ -9,7 +9,7 @@ export const resolvers = {
     },
     getSalon: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<Salon | null> => {
       return await prisma.salon.findUnique({
         where: { id },
@@ -19,13 +19,13 @@ export const resolvers = {
 
     getServices: async (
       _: unknown,
-      { salonId }: { salonId: string },
+      { salonId }: { salonId: string }
     ): Promise<Service[]> => {
       return await prisma.service.findMany({ where: { salonId } });
     },
     getService: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<Service | null> => {
       return await prisma.service.findUnique({ where: { id } });
     },
@@ -35,24 +35,84 @@ export const resolvers = {
     },
     getAppointment: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<Appointment | null> => {
       return await prisma.appointment.findUnique({
         where: { id },
         include: { salon: true },
       });
     },
+
+    getTodaysAppointments: async (): Promise<Appointment[]> => {
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      return await prisma.appointment.findMany({
+        where: {
+          appointmentTime: {
+            gte: now,
+            lt: tomorrow,
+          },
+        },
+        include: { salon: true },
+      });
+    },
+
+    getTodaysAppointmentsSummary: async (): Promise<{
+      numberOfAppointments: number;
+      numberOfServices: number;
+      expectedRevenue: number;
+    }> => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      const appointments = await prisma.appointment.findMany({
+        where: {
+          appointmentTime: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+        include: { salon: true },
+      });
+
+      const numberOfAppointments = appointments.length;
+      const numberOfServices = appointments.length; // Assuming one service per appointment
+      const expectedRevenue = await appointments.reduce(
+        async (totalPromise, appointment) => {
+          const total = await totalPromise;
+          const service = appointment.serviceName;
+          const serviceData = await prisma.service.findFirst({
+            where: { name: service },
+          });
+          const servicePrice = serviceData ? serviceData.price : 0;
+          return total + servicePrice;
+        },
+        Promise.resolve(0)
+      );
+
+      return {
+        numberOfAppointments,
+        numberOfServices,
+        expectedRevenue,
+      };
+    },
   },
   Mutation: {
     addSalon: async (
       _: unknown,
-      { name, location }: { name: string; location: string },
+      { name, location }: { name: string; location: string }
     ): Promise<Salon> => {
       return await prisma.salon.create({ data: { name, location } });
     },
     updateSalon: async (
       _: unknown,
-      { id, name, location }: { id: string; name?: string; location?: string },
+      { id, name, location }: { id: string; name?: string; location?: string }
     ): Promise<Salon> => {
       return await prisma.salon.update({
         where: { id },
@@ -61,7 +121,7 @@ export const resolvers = {
     },
     deleteSalon: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<boolean> => {
       await prisma.salon.delete({ where: { id } });
       return true;
@@ -69,17 +129,13 @@ export const resolvers = {
 
     addService: async (
       _: unknown,
-      {
-        salonId,
-        name,
-        price,
-      }: { salonId: string; name: string; price: number },
+      { salonId, name, price }: { salonId: string; name: string; price: number }
     ): Promise<Service> => {
       return await prisma.service.create({ data: { salonId, name, price } });
     },
     updateService: async (
       _: unknown,
-      { id, name, price }: { id: string; name?: string; price?: number },
+      { id, name, price }: { id: string; name?: string; price?: number }
     ): Promise<Service> => {
       return await prisma.service.update({
         where: { id },
@@ -88,7 +144,7 @@ export const resolvers = {
     },
     deleteService: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<boolean> => {
       await prisma.service.delete({ where: { id } });
       return true;
@@ -106,7 +162,7 @@ export const resolvers = {
         customerName: string;
         serviceName: string;
         appointmentTime: string;
-      },
+      }
     ): Promise<Appointment> => {
       return await prisma.appointment.create({
         data: {
@@ -129,7 +185,7 @@ export const resolvers = {
         customerName?: string;
         serviceName?: string;
         appointmentTime?: string;
-      },
+      }
     ): Promise<Appointment> => {
       return await prisma.appointment.update({
         where: { id },
@@ -144,7 +200,7 @@ export const resolvers = {
     },
     deleteAppointment: async (
       _: unknown,
-      { id }: { id: string },
+      { id }: { id: string }
     ): Promise<boolean> => {
       await prisma.appointment.delete({ where: { id } });
       return true;

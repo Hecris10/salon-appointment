@@ -25,6 +25,12 @@ export const typeDefs = gql`
     salon: Salon!
   }
 
+  type TodaysAppointmentsSummary {
+    numberOfAppointments: Int!
+    numberOfServices: Int!
+    expectedRevenue: Float!
+  }
+
   type Query {
     getSalons: [Salon!]!
     getSalon(id: ID!): Salon
@@ -34,6 +40,9 @@ export const typeDefs = gql`
 
     getAppointments: [Appointment!]!
     getAppointment(id: ID!): Appointment
+
+    getTodaysAppointmentsSummary: TodaysAppointmentsSummary!
+    getTodaysAppointments: [Appointment!]!
   }
 
   type Mutation {

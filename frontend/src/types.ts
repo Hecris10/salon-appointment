@@ -42,6 +42,18 @@ export interface GetAppointmentResponse {
   getAppointment: Appointment;
 }
 
+export interface GetTodaysAppointmentsResponse {
+  getTodaysAppointments: Appointment[];
+}
+
+export interface GetTodaysAppointmentsSummaryResponse {
+  getTodaysAppointmentsSummary: {
+    numberOfAppointments: number;
+    numberOfServices: number;
+    expectedRevenue: number;
+  };
+}
+
 // GraphQL Mutation Responses
 export interface AddSalonResponse {
   addSalon: Salon;

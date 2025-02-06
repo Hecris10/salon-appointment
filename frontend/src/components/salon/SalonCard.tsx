@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Edit, MapPin, Scissors, Trash2 } from "lucide-react";
 import { NavLink } from "react-router";
+import { Salon } from "../../types";
 
 interface SalonCardProps {
   salon: Salon;

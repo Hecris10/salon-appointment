@@ -1,7 +1,9 @@
 import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { Layout } from "./components/Layout";
+import { MainLayout } from "./components/laout/MainLayout";
+import { SalonsLayout } from "./components/laout/SalonsLayout";
 import { Appointments } from "./pages/Appointment";
+import { Dashboard } from "./pages/Dashboard";
 import { Salons } from "./pages/Salons";
 import { Services } from "./pages/Services";
 import client from "./server/apolloClient";
@@ -11,11 +13,13 @@ function App() {
     <ApolloProvider client={client}>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          <Route element={<SalonsLayout />}>
             <Route path="/" element={<Salons />} />
-            <Route path="/Dashboard" element={<Appointments />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/services" element={<Services />} />
+          </Route>
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard/:salonId" element={<Dashboard />} />
+            <Route path="/appointments/:salonId" element={<Appointments />} />
+            <Route path="/services/:salonId" element={<Services />} />
           </Route>
         </Routes>
       </BrowserRouter>
