@@ -1,5 +1,3 @@
-"use client";
-
 import { FetchResult } from "@apollo/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";

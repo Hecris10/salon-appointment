@@ -1,5 +1,3 @@
-"use client";
-
 import { FetchResult } from "@apollo/client";
 import { motion } from "framer-motion";
 import { Appointment, NewAppointment } from "../../types";

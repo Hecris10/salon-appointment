@@ -1,5 +1,3 @@
-"use client";
-
 import { AnimatePresence, motion } from "framer-motion";
 import { Appointment } from "../../../types";
 import { formatDate } from "../../../utilts/time";
