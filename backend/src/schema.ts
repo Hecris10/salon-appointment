@@ -40,14 +40,15 @@ export const typeDefs = gql`
     getService(id: ID!): Service
 
     getAppointments(
+      salonId: ID!
       searchTerm: String
       date: String
       service: String
     ): [Appointment!]!
     getAppointment(id: ID!): Appointment
 
-    getTodaysAppointmentsSummary: TodaysAppointmentsSummary!
-    getTodaysAppointments: [Appointment!]!
+    getTodaysAppointmentsSummary(salonId: ID!): TodaysAppointmentsSummary!
+    getTodaysAppointments(salonId: ID!): [Appointment!]!
   }
 
   type Mutation {

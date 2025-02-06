@@ -1,7 +1,7 @@
 import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { MainLayout } from "./components/laout/MainLayout";
-import { SalonsLayout } from "./components/laout/SalonsLayout";
+import { MainLayout } from "./components/layouts/MainLayout";
+import { SalonsLayout } from "./components/layouts/SalonsLayout";
 import { Appointments } from "./pages/Appointment";
 import { Dashboard } from "./pages/Dashboard";
 import { Salons } from "./pages/Salons";

@@ -33,18 +33,25 @@ export const resolvers = {
     getAppointments: async (
       _: unknown,
       {
+        salonId,
         searchTerm,
         date,
         service,
-      }: { searchTerm?: string; date?: string; service?: string }
+      }: {
+        salonId: string;
+        searchTerm?: string;
+        date?: string;
+        service?: string;
+      }
     ): Promise<Appointment[]> => {
       const filters: {
+        salonId: string;
         OR?: {
           customerName?: { contains: string; mode: "insensitive" };
         }[];
         appointmentTime?: { gte: Date; lt: Date };
         serviceId?: { equals: string };
-      } = {};
+      } = { salonId };
 
       if (searchTerm) {
         filters.OR = [
@@ -82,7 +89,10 @@ export const resolvers = {
       });
     },
 
-    getTodaysAppointments: async (): Promise<Appointment[]> => {
+    getTodaysAppointments: async (
+      _: unknown,
+      { salonId }: { salonId: string }
+    ): Promise<Appointment[]> => {
       const now = new Date();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -91,6 +101,7 @@ export const resolvers = {
 
       return await prisma.appointment.findMany({
         where: {
+          salonId,
           appointmentTime: {
             gte: now,
             lt: tomorrow,
@@ -100,7 +111,10 @@ export const resolvers = {
       });
     },
 
-    getTodaysAppointmentsSummary: async (): Promise<{
+    getTodaysAppointmentsSummary: async (
+      _: unknown,
+      { salonId }: { salonId: string }
+    ): Promise<{
       numberOfAppointments: number;
       numberOfServices: number;
       expectedRevenue: number;
@@ -112,6 +126,7 @@ export const resolvers = {
 
       const appointments = await prisma.appointment.findMany({
         where: {
+          salonId,
           appointmentTime: {
             gte: today,
             lt: tomorrow,

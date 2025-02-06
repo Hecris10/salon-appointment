@@ -7,8 +7,6 @@ import { formatTime } from "../../utilts/time";
 export default function UpcomingAppointments() {
   const { data, loading, error } = useTodayAppointments();
 
-  console.log({ data });
-
   if (loading) {
     return (
       <div className="text-center py-8">Loading upcoming appointments...</div>

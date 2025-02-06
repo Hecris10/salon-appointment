@@ -96,8 +96,18 @@ export const DELETE_SERVICE = gql`
 
 // ---- APPOINTMENTS ----
 export const GET_APPOINTMENTS = gql`
-  query GetAppointments($searchTerm: String, $date: String, $service: String) {
-    getAppointments(searchTerm: $searchTerm, date: $date, service: $service) {
+  query GetAppointments(
+    $salonId: ID!
+    $searchTerm: String
+    $date: String
+    $service: String
+  ) {
+    getAppointments(
+      salonId: $salonId
+      searchTerm: $searchTerm
+      date: $date
+      service: $service
+    ) {
       id
       customerName
       serviceId
@@ -200,8 +210,8 @@ export const DELETE_APPOINTMENT = gql`
 `;
 
 export const GET_TODAYS_APPOINTMENTS_SUMMARY = gql`
-  query GetTodaysAppointmentsSummary {
-    getTodaysAppointmentsSummary {
+  query GetTodaysAppointmentsSummary($salonId: ID!) {
+    getTodaysAppointmentsSummary(salonId: $salonId) {
       numberOfAppointments
       numberOfServices
       expectedRevenue
@@ -210,8 +220,8 @@ export const GET_TODAYS_APPOINTMENTS_SUMMARY = gql`
 `;
 
 export const GET_TODAYS_APPOINTMENTS = gql`
-  query GetTodaysAppointments {
-    getTodaysAppointments {
+  query GetTodaysAppointments($salonId: ID!) {
+    getTodaysAppointments(salonId: $salonId) {
       id
       customerName
       serviceId

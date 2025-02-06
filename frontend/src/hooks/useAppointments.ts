@@ -18,6 +18,7 @@ export const useAppointments = (queryParams?: {
     getAppointments: Appointment[];
   }>(GET_APPOINTMENTS, {
     variables: {
+      salonId,
       searchTerm: queryParams?.searchTerm,
       date: queryParams?.date,
       service: queryParams?.service,
@@ -52,7 +53,6 @@ export const useAppointments = (queryParams?: {
   };
 
   const onUpdated = async (appointment: Appointment) => {
-   
     return await updateAppointment({
       variables: {
         id: appointment.id,
