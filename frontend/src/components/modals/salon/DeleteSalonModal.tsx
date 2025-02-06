@@ -1,6 +1,5 @@
-"use client";
-
 import { AnimatePresence, motion } from "framer-motion";
+import { Salon } from "../../../types";
 
 interface DeleteSalonModalProps {
   isOpen: boolean;
