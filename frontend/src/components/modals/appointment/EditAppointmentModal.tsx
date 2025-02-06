@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { useServices } from "../../../hooks/useServices";
+import { Appointment } from "../../../types";
 
 interface EditAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (appointment: any) => void;
-  appointment: any;
+  onUpdate: (appointment: Appointment) => void;
+  appointment: Appointment;
 }
 
 export default function EditAppointmentModal({
@@ -14,23 +16,25 @@ export default function EditAppointmentModal({
   onUpdate,
   appointment,
 }: EditAppointmentModalProps) {
-  const [editedAppointment, setEditedAppointment] =
-    useState<Appointment>(appointment);
-
-  useEffect(() => {
-    setEditedAppointment(appointment);
-  }, [appointment]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setEditedAppointment((prev) => ({ ...prev, [name]: value }));
-  };
-
+  const { salonId } = useParams();
+  const { data: services, loading: loadingServices } = useServices(
+    salonId || "",
+  );
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate(editedAppointment);
+    const name = (e.target as HTMLFormElement).customerName.value;
+    const serviceId = (e.target as HTMLFormElement).serviceId.value;
+
+    const time = (e.target as HTMLFormElement).time.value;
+
+    const updatedAppointment: Appointment = {
+      ...appointment,
+      customerName: name,
+      serviceId,
+      appointmentTime: new Date(time).toISOString(),
+    };
+
+    onUpdate(updatedAppointment);
   };
 
   return (
@@ -63,8 +67,7 @@ export default function EditAppointmentModal({
                   type="text"
                   id="customerName"
                   name="customerName"
-                  value={editedAppointment.customerName}
-                  onChange={handleInputChange}
+                  defaultValue={appointment.customerName}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                 />
@@ -76,15 +79,30 @@ export default function EditAppointmentModal({
                 >
                   Service
                 </label>
-                <input
-                  type="text"
-                  id="service"
-                  name="service"
-                  value={editedAppointment.service}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                <select
+                  name="serviceId"
                   required
-                />
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                >
+                  {loadingServices ? (
+                    <option value="" disabled>
+                      Loading services...
+                    </option>
+                  ) : (
+                    <>
+                      <option value="">
+                        {services?.length === 0
+                          ? "No services available"
+                          : "Select a service"}
+                      </option>
+                      {services?.map((service) => (
+                        <option key={service.id} value={service.id}>
+                          {service.name}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
               </div>
               <div>
                 <label
@@ -97,29 +115,14 @@ export default function EditAppointmentModal({
                   type="datetime-local"
                   id="time"
                   name="time"
-                  value={editedAppointment.time}
-                  onChange={handleInputChange}
+                  defaultValue={new Date(appointment.appointmentTime)
+                    .toISOString()
+                    .slice(0, 16)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="stylist"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Stylist
-                </label>
-                <input
-                  type="text"
-                  id="stylist"
-                  name="stylist"
-                  value={editedAppointment.stylist}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
+
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"

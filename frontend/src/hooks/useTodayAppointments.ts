@@ -5,6 +5,9 @@ import { GetTodaysAppointmentsResponse } from "../types";
 export const useTodayAppointments = () => {
   const { data, loading, error } = useQuery<GetTodaysAppointmentsResponse>(
     GET_TODAYS_APPOINTMENTS,
+    {
+      fetchPolicy: "no-cache",
+    },
   );
 
   return { data: data?.getTodaysAppointments, loading, error };

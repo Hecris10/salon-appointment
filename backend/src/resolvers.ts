@@ -30,8 +30,47 @@ export const resolvers = {
       return await prisma.service.findUnique({ where: { id } });
     },
 
-    getAppointments: async (): Promise<Appointment[]> => {
-      return await prisma.appointment.findMany({ include: { salon: true } });
+    getAppointments: async (
+      _: unknown,
+      {
+        searchTerm,
+        date,
+        service,
+      }: { searchTerm?: string; date?: string; service?: string }
+    ): Promise<Appointment[]> => {
+      const filters: {
+        OR?: {
+          customerName?: { contains: string; mode: "insensitive" };
+        }[];
+        appointmentTime?: { gte: Date; lt: Date };
+        serviceId?: { equals: string };
+      } = {};
+
+      if (searchTerm) {
+        filters.OR = [
+          { customerName: { contains: searchTerm, mode: "insensitive" } },
+        ];
+      }
+
+      if (date) {
+        const startDate = new Date(date);
+        const endDate = new Date(date);
+        endDate.setDate(endDate.getDate() + 1);
+        filters.appointmentTime = {
+          gte: startDate,
+          lt: endDate,
+        };
+      }
+
+      if (service) {
+        filters.serviceId = { equals: service };
+      }
+
+      return await prisma.appointment.findMany({
+        where: filters,
+        include: { salon: true, service: true },
+        orderBy: { appointmentTime: "desc" },
+      });
     },
     getAppointment: async (
       _: unknown,
@@ -39,7 +78,7 @@ export const resolvers = {
     ): Promise<Appointment | null> => {
       return await prisma.appointment.findUnique({
         where: { id },
-        include: { salon: true },
+        include: { salon: true, service: true },
       });
     },
 
@@ -57,7 +96,7 @@ export const resolvers = {
             lt: tomorrow,
           },
         },
-        include: { salon: true },
+        include: { salon: true, service: true },
       });
     },
 
@@ -78,7 +117,7 @@ export const resolvers = {
             lt: tomorrow,
           },
         },
-        include: { salon: true },
+        include: { salon: true, service: true },
       });
 
       const numberOfAppointments = appointments.length;
@@ -86,9 +125,9 @@ export const resolvers = {
       const expectedRevenue = await appointments.reduce(
         async (totalPromise, appointment) => {
           const total = await totalPromise;
-          const service = appointment.serviceName;
+          const serviceId = appointment.serviceId;
           const serviceData = await prisma.service.findFirst({
-            where: { name: service },
+            where: { id: serviceId },
           });
           const servicePrice = serviceData ? serviceData.price : 0;
           return total + servicePrice;
@@ -155,12 +194,12 @@ export const resolvers = {
       {
         salonId,
         customerName,
-        serviceName,
+        serviceId,
         appointmentTime,
       }: {
         salonId: string;
         customerName: string;
-        serviceName: string;
+        serviceId: string;
         appointmentTime: string;
       }
     ): Promise<Appointment> => {
@@ -168,8 +207,12 @@ export const resolvers = {
         data: {
           salonId,
           customerName,
-          serviceName,
+          serviceId,
           appointmentTime: new Date(appointmentTime),
+        },
+        include: {
+          salon: true,
+          service: true,
         },
       });
     },
@@ -178,12 +221,12 @@ export const resolvers = {
       {
         id,
         customerName,
-        serviceName,
+        serviceId,
         appointmentTime,
       }: {
         id: string;
         customerName?: string;
-        serviceName?: string;
+        serviceId?: string;
         appointmentTime?: string;
       }
     ): Promise<Appointment> => {
@@ -191,7 +234,7 @@ export const resolvers = {
         where: { id },
         data: {
           customerName,
-          serviceName,
+          serviceId,
           appointmentTime: appointmentTime
             ? new Date(appointmentTime)
             : undefined,

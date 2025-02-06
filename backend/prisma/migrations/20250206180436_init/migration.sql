@@ -21,8 +21,8 @@ CREATE TABLE "Service" (
 CREATE TABLE "Appointment" (
     "id" TEXT NOT NULL,
     "salonId" TEXT NOT NULL,
+    "serviceId" TEXT NOT NULL,
     "customerName" TEXT NOT NULL,
-    "serviceName" TEXT NOT NULL,
     "appointmentTime" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id")
@@ -33,3 +33,6 @@ ALTER TABLE "Service" ADD CONSTRAINT "Service_salonId_fkey" FOREIGN KEY ("salonI
 
 -- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_salonId_fkey" FOREIGN KEY ("salonId") REFERENCES "Salon"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

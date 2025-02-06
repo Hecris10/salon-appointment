@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { NewService } from "../../../types";
 
 interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (service: Service) => void;
+  onAdd: (service: NewService) => void;
 }
 
 export default function AddServiceModal({
@@ -12,24 +12,14 @@ export default function AddServiceModal({
   onClose,
   onAdd,
 }: AddServiceModalProps) {
-  const [newService, setNewService] = useState<Omit<Service, "id">>({
-    name: "",
-    duration: 0,
-    price: 0,
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewService((prev) => ({
-      ...prev,
-      [name]: name === "name" ? value : Number(value),
-    }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(newService as Service);
-    setNewService({ name: "", duration: 0, price: 0 });
+    const formData = new FormData(e.target as HTMLFormElement);
+    const newService: NewService = {
+      name: formData.get("name") as string,
+      price: parseFloat(formData.get("price") as string),
+    };
+    onAdd(newService);
   };
 
   return (
@@ -62,28 +52,8 @@ export default function AddServiceModal({
                   type="text"
                   id="name"
                   name="name"
-                  value={newService.name}
-                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="duration"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  id="duration"
-                  name="duration"
-                  value={newService.duration}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                  required
-                  min="0"
                 />
               </div>
               <div>
@@ -97,8 +67,6 @@ export default function AddServiceModal({
                   type="number"
                   id="price"
                   name="price"
-                  value={newService.price}
-                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                   min="0"

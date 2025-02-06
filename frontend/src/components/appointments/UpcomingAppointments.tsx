@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 
 import { Calendar, Clock, User } from "lucide-react";
 import { useTodayAppointments } from "../../hooks/useTodayAppointments";
+import { formatTime } from "../../utilts/time";
 
 export default function UpcomingAppointments() {
   const { data, loading, error } = useTodayAppointments();
@@ -40,7 +41,7 @@ export default function UpcomingAppointments() {
             <div className="flex items-center mb-4">
               <Calendar className="text-purple-500 mr-2" size={20} />
               <h3 className="text-lg font-semibold text-gray-800">
-                {appointment.serviceName}
+                {appointment.service.name}
               </h3>
             </div>
             <div className="flex items-center mb-2">
@@ -50,10 +51,7 @@ export default function UpcomingAppointments() {
             <div className="flex items-center mb-2">
               <Clock className="text-gray-400 mr-2" size={16} />
               <p className="text-gray-600">
-                {new Date(appointment.appointmentTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatTime(appointment.appointmentTime)}
               </p>
             </div>
           </motion.div>

@@ -1,11 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { NewSalon } from "../../../types";
 interface AddSalonModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (salon: Omit<Salon, "id">) => void;
+  onAdd: (newSalon: NewSalon) => void;
 }
 
 export default function AddSalonModal({
@@ -13,28 +13,17 @@ export default function AddSalonModal({
   onClose,
   onAdd,
 }: AddSalonModalProps) {
-  const [newSalon, setNewSalon] = useState<Omit<Salon, "id">>({
-    name: "",
-    location: "",
-    services: [],
-  });
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setNewSalon((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleServicesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const services = e.target.value.split(",").map((service) => service.trim());
-    setNewSalon((prev) => ({ ...prev, services }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("name") as string;
+    const location = formData.get("location") as string;
+    const newSalon: NewSalon = {
+      name,
+      location,
+    };
     onAdd(newSalon);
-    setNewSalon({ name: "", location: "", services: [] });
+    onClose();
   };
 
   return (
@@ -67,8 +56,6 @@ export default function AddSalonModal({
                   type="text"
                   id="name"
                   name="name"
-                  value={newSalon.name}
-                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                 />
@@ -84,25 +71,6 @@ export default function AddSalonModal({
                   type="text"
                   id="location"
                   name="location"
-                  value={newSalon.location}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="services"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Services (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  id="services"
-                  name="services"
-                  value={newSalon.services.join(", ")}
-                  onChange={handleServicesChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                 />
