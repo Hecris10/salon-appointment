@@ -19,7 +19,7 @@ export const MainLayout = () => {
             <li>
               <NavLink
                 to={`/dashboard/${salonId}`}
-                className="text-purple-600 hover:text-purple-800 font-medium"
+                className={linkClasses("dashboard")}
               >
                 Dashboard
               </NavLink>

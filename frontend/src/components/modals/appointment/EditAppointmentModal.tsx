@@ -33,6 +33,8 @@ export default function EditAppointmentModal({
       appointmentTime: new Date(time).toISOString(),
     };
 
+    console.log({ appointment });
+
     try {
       setError(false);
       const res = await onUpdate(updatedAppointment);

@@ -4,8 +4,11 @@ import NewAppointmentButton from "../components/appointments/NewAppointmentButto
 import UpcomingAppointments from "../components/appointments/UpcomingAppointments";
 import DashboardSummary from "../components/dashboard/DashboardSummary";
 import { useDashboard } from "../hooks/useDashboard";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 export const Dashboard = () => {
+  useDocumentTitle("Salon System | Dashboard");
+
   const { salonId } = useParams();
   const [openNewModal, setNewModal] = useState(false);
   const { addAppointment, summary, appointments } = useDashboard();
