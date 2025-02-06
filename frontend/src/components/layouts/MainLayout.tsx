@@ -1,14 +1,24 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLocation, useParams } from "react-router";
 
-export const Layout = () => {
+export const MainLayout = () => {
+  const { salonId } = useParams();
+  const location = useLocation();
+
+  const isOnPageUrl = (url: string) => location.pathname.includes(url);
+
+  const linkClasses = (url: string) =>
+    `text-purple-600 hover:text-purple-800 font-medium ${
+      isOnPageUrl(url) ? "text-purple-800 font-bold" : ""
+    }`;
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <header className="bg-white shadow w-full fixed top-0 z-10">
-        <nav className="container mx-auto px-4 py-4">
+        <nav className="container flex justify-between mx-auto px-4 py-4">
           <ul className="flex space-x-4">
             <li>
               <NavLink
-                to="/"
+                to={`/dashboard/${salonId}`}
                 className="text-purple-600 hover:text-purple-800 font-medium"
               >
                 Dashboard
@@ -16,8 +26,8 @@ export const Layout = () => {
             </li>
             <li>
               <NavLink
-                to="/appointments"
-                className="text-purple-600 hover:text-purple-800 font-medium"
+                to={`/appointments/${salonId}`}
+                className={linkClasses("appointments")}
               >
                 Appointments
               </NavLink>
@@ -32,8 +42,8 @@ export const Layout = () => {
             </li> */}
             <li>
               <NavLink
-                to="/services"
-                className="text-purple-600 hover:text-purple-800 font-medium"
+                to={`/services/${salonId}`}
+                className={linkClasses("services")}
               >
                 Services
               </NavLink>
@@ -47,6 +57,12 @@ export const Layout = () => {
               </NavLink>
             </li> */}
           </ul>
+          <NavLink
+            className=" hover:text-purple-800 text-purple-800 font-bold"
+            to="/"
+          >
+            Salons
+          </NavLink>
         </nav>
       </header>
       <main className="flex-grow mt-16">

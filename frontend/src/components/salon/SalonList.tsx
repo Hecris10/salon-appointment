@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useSalons } from "../../hooks/useSalons";
-import type { Salon } from "../../types";
+import type { NewSalon, Salon } from "../../types";
 import AddSalonModal from "../modals/salon/AddSalonModal";
 import DeleteSalonModal from "../modals/salon/DeleteSalonModal";
 import EditSalonModal from "../modals/salon/EditSalonModal";
@@ -16,12 +16,12 @@ export default function SalonList() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
 
-  const handleAddSalon = async (newSalon: Omit<Salon, "id">) => {
+  const handleAddSalon = async (newSalon: NewSalon) => {
     try {
       await addSalon({
-        variables: { name: newSalon.name, location: newSalon.location },
+        variables: { ...newSalon },
       });
-      console.log("Added new salon: ", newSalon);
+      setAddModalOpen(false);
     } catch (error) {
       console.error("Error adding salon: ", error);
     }

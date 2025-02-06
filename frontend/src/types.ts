@@ -5,6 +5,8 @@ export interface Salon {
   services: Service[];
 }
 
+export type NewSalon = Omit<Salon, "id" | "services">;
+
 export interface Service {
   id: string;
   salonId: string;
@@ -12,14 +14,19 @@ export interface Service {
   price: number;
 }
 
+export type NewService = Omit<Service, "id" | "salonId">;
+
 export interface Appointment {
   id: string;
   salonId: string;
   customerName: string;
-  serviceName: string;
+  serviceId: string;
   appointmentTime: string;
   salon: Salon;
+  service: Service;
 }
+
+export type NewAppointment = Omit<Appointment, "id" | "salon" | "service">;
 
 // GraphQL Query Responses
 export interface GetSalonsResponse {
@@ -46,12 +53,15 @@ export interface GetTodaysAppointmentsResponse {
   getTodaysAppointments: Appointment[];
 }
 
+
+export interface TodaysAppointmentsSummary {
+  numberOfAppointments: number;
+  numberOfServices: number;
+  expectedRevenue: number;
+}
+
 export interface GetTodaysAppointmentsSummaryResponse {
-  getTodaysAppointmentsSummary: {
-    numberOfAppointments: number;
-    numberOfServices: number;
-    expectedRevenue: number;
-  };
+  getTodaysAppointmentsSummary: TodaysAppointmentsSummary;
 }
 
 // GraphQL Mutation Responses

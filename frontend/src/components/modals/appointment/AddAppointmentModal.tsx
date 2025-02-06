@@ -1,20 +1,25 @@
 "use client";
 
+import { FetchResult } from "@apollo/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { useAppointments } from "../../../hooks/useAppointments";
+import { useParams } from "react-router";
+import { useServices } from "../../../hooks/useServices";
+import { Appointment, NewAppointment } from "../../../types";
 
-export default function AppointmentModal({
+export default function AddAppointmentModal({
   isOpen,
   onClose,
+  addAppointment,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  addAppointment: (
+    appointment: NewAppointment,
+  ) => Promise<FetchResult<Appointment>>;
 }) {
-  const { addAppointment } = useAppointments();
-  const [customerName, setCustomerName] = useState("");
-  const [service, setService] = useState("");
-  const [time, setTime] = useState("");
+  const { salonId } = useParams();
+  const { data: services, loading: loadingServices } = useServices();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{
     type: "success" | "error";
@@ -25,30 +30,33 @@ export default function AppointmentModal({
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitMessage(null);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const customerName = formData.get("customerName") as string;
+    const serviceId = formData.get("serviceId") as string;
+    const appointmentTime = formData.get("time") as string;
+
+    const newAppointment: NewAppointment = {
+      customerName,
+      serviceId,
+      appointmentTime,
+      salonId: salonId || "",
+    };
 
     try {
-      await addAppointment({
-        variables: {
-          salonId: "1", // Replace with actual salonId
-          customerName,
-          serviceName: service,
-          appointmentTime: time,
-        },
-      });
+      const res = await addAppointment(newAppointment);
+
+      if (res.errors) {
+        throw new Error(res.errors[0]?.message);
+      }
 
       setSubmitMessage({
         type: "success",
         text: "Appointment booked successfully!",
       });
       // Reset form fields
-      setCustomerName("");
-      setService("");
-      setTime("");
       // Close modal after successful submission
-      setTimeout(() => {
-        onClose();
-        setSubmitMessage(null);
-      }, 2000);
+
+      onClose();
     } catch (error: unknown) {
       console.error("Failed to book appointment:", error);
       setSubmitMessage({
@@ -88,9 +96,7 @@ export default function AppointmentModal({
                 </label>
                 <input
                   type="text"
-                  id="customerName"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
+                  name="customerName"
                   required
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                 />
@@ -103,18 +109,28 @@ export default function AppointmentModal({
                   Salon Service
                 </label>
                 <select
-                  id="service"
-                  value={service}
-                  onChange={(e) => setService(e.target.value)}
+                  name="serviceId"
                   required
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                 >
-                  <option value="">Select a service</option>
-                  <option value="Haircut">Haircut</option>
-                  <option value="Hair Coloring">Hair Coloring</option>
-                  <option value="Manicure">Manicure</option>
-                  <option value="Pedicure">Pedicure</option>
-                  <option value="Facial">Facial</option>
+                  {loadingServices ? (
+                    <option value="" disabled>
+                      Loading services...
+                    </option>
+                  ) : (
+                    <>
+                      <option value="">
+                        {services?.length === 0
+                          ? "No services available"
+                          : "Select a service"}
+                      </option>
+                      {services?.map((service) => (
+                        <option key={service.id} value={service.id}>
+                          {service.name}
+                        </option>
+                      ))}
+                    </>
+                  )}
                 </select>
               </div>
               <div>
@@ -127,8 +143,7 @@ export default function AppointmentModal({
                 <input
                   type="datetime-local"
                   id="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
+                  name="time"
                   required
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                 />

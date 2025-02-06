@@ -20,9 +20,10 @@ export const typeDefs = gql`
     id: ID!
     salonId: String!
     customerName: String!
-    serviceName: String!
+    serviceId: String!
     appointmentTime: String!
     salon: Salon!
+    service: Service!
   }
 
   type TodaysAppointmentsSummary {
@@ -38,11 +39,16 @@ export const typeDefs = gql`
     getServices(salonId: ID!): [Service!]!
     getService(id: ID!): Service
 
-    getAppointments: [Appointment!]!
+    getAppointments(
+      salonId: ID!
+      searchTerm: String
+      date: String
+      service: String
+    ): [Appointment!]!
     getAppointment(id: ID!): Appointment
 
-    getTodaysAppointmentsSummary: TodaysAppointmentsSummary!
-    getTodaysAppointments: [Appointment!]!
+    getTodaysAppointmentsSummary(salonId: ID!): TodaysAppointmentsSummary!
+    getTodaysAppointments(salonId: ID!): [Appointment!]!
   }
 
   type Mutation {
@@ -57,13 +63,13 @@ export const typeDefs = gql`
     addAppointment(
       salonId: String!
       customerName: String!
-      serviceName: String!
+      serviceId: String!
       appointmentTime: String!
     ): Appointment!
     updateAppointment(
       id: ID!
       customerName: String
-      serviceName: String
+      serviceId: String
       appointmentTime: String
     ): Appointment!
     deleteAppointment(id: ID!): Boolean!

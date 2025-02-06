@@ -1,12 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { Appointment } from "../../../types";
+import { formatDate } from "../../../utilts/time";
 
 interface DeleteAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
-  appointment: any;
+  appointment: Appointment;
 }
 
 export default function DeleteAppointmentModal({
@@ -36,7 +38,7 @@ export default function DeleteAppointmentModal({
             <p className="mb-6 text-gray-600">
               Are you sure you want to delete the appointment for{" "}
               {appointment.customerName} on{" "}
-              {new Date(appointment.time).toLocaleString()}?
+              {formatDate(appointment.appointmentTime)}?
             </p>
             <div className="flex justify-end space-x-2">
               <button

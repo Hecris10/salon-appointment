@@ -27,7 +27,17 @@ export default function SalonCard({ salon, onEdit, onDelete }: SalonCardProps) {
         </div>
         <div className="flex items-center text-gray-600 mb-4">
           <Scissors size={16} className="mr-2" />
-          <span>{salon.services.join(", ")}</span>
+          {!salon.services || salon.services.length === 0 ? (
+            <>
+              <span>No services available</span>
+            </>
+          ) : (
+            <>
+              <span>
+                {salon.services.map((service) => service.name).join(", ")}
+              </span>
+            </>
+          )}
         </div>
         <div className="flex justify-between items-center">
           <NavLink

@@ -1,41 +1,19 @@
 import { motion } from "framer-motion";
 import { Edit, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useServices } from "../../hooks/useServices";
+import { NewService, Service } from "../../types";
 import AddServiceModal from "../modals/service/AddServiceModal";
 import DeleteServiceModal from "../modals/service/DeleteServiceModal";
 import EditServiceModal from "../modals/service/EditServiceModal";
 
 export default function ServicesTable() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, loading, error, deleteService, updateService, addService } =
+    useServices();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        // Simulating API call with a delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockServices: Service[] = [
-          { id: 1, name: "Haircut", duration: 30, price: 50 },
-          { id: 2, name: "Hair Coloring", duration: 120, price: 150 },
-          { id: 3, name: "Manicure", duration: 45, price: 35 },
-          { id: 4, name: "Pedicure", duration: 60, price: 45 },
-          { id: 5, name: "Facial", duration: 60, price: 80 },
-        ];
-        setServices(mockServices);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to fetch services. Please try again later.");
-        setIsLoading(false);
-      }
-    };
-
-    fetchServices();
-  }, []);
 
   const handleAddClick = () => {
     setAddModalOpen(true);
@@ -51,31 +29,28 @@ export default function ServicesTable() {
     setDeleteModalOpen(true);
   };
 
-  const handleAddService = (newService: Service) => {
-    setServices([...services, { ...newService, id: services.length + 1 }]);
+  const handleAddService = async (newService: NewService) => {
+    await addService(newService);
     setAddModalOpen(false);
   };
 
-  const handleUpdateService = (updatedService: Service) => {
-    setServices(
-      services.map((service) =>
-        service.id === updatedService.id ? updatedService : service
-      )
-    );
-    setEditModalOpen(false);
-  };
 
-  const handleDeleteService = (id: number) => {
-    setServices(services.filter((service) => service.id !== id));
+  const handleDeleteService = (id: string) => {
+    setSelectedService(null);
+    deleteService(id);
     setDeleteModalOpen(false);
   };
 
-  if (isLoading) {
+  if (loading) {
     return <div className="text-center py-8">Loading services...</div>;
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-600">{error}</div>;
+    return (
+      <div className="text-center py-8 text-red-600">
+        There was an error loading the services. Please try again later.
+      </div>
+    );
   }
 
   return (
@@ -97,9 +72,6 @@ export default function ServicesTable() {
               Name
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Duration (min)
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Price ($)
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -108,35 +80,42 @@ export default function ServicesTable() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {services.map((service) => (
-            <motion.tr
-              key={service.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <td className="px-6 py-4 whitespace-nowrap">{service.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {service.duration}
+          {data.length === 0 || !data ? (
+            <tr>
+              <td colSpan={4} className="text-center py-8 text-gray-600">
+                No services found.
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">${service.price}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  className="text-indigo-600 hover:text-indigo-900 mr-2"
-                  onClick={() => handleEditClick(service)}
-                >
-                  <Edit size={18} />
-                </button>
-                <button
-                  className="text-red-600 hover:text-red-900"
-                  onClick={() => handleDeleteClick(service)}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </td>
-            </motion.tr>
-          ))}
+            </tr>
+          ) : (
+            data.map((service) => (
+              <motion.tr
+                key={service.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <td className="px-6 py-4 whitespace-nowrap">{service.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  ${service.price}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    className="text-indigo-600 hover:text-indigo-900 mr-2"
+                    onClick={() => handleEditClick(service)}
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button
+                    className="text-red-600 hover:text-red-900"
+                    onClick={() => handleDeleteClick(service)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </td>
+              </motion.tr>
+            ))
+          )}
         </tbody>
       </table>
       <AddServiceModal
@@ -149,7 +128,7 @@ export default function ServicesTable() {
           <EditServiceModal
             isOpen={editModalOpen}
             onClose={() => setEditModalOpen(false)}
-            onUpdate={handleUpdateService}
+            onUpdate={updateService}
             service={selectedService}
           />
           <DeleteServiceModal

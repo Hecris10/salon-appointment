@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Salon } from "../../../types";
 
 interface EditSalonModalProps {
   isOpen: boolean;
@@ -23,15 +24,10 @@ export default function EditSalonModal({
   }, [salon]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setEditedSalon((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleServicesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const services = e.target.value.split(",").map((service) => service.trim());
-    setEditedSalon((prev) => ({ ...prev, services }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -92,23 +88,7 @@ export default function EditSalonModal({
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="services"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Services (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  id="services"
-                  name="services"
-                  value={editedSalon.services.join(", ")}
-                  onChange={handleServicesChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
+
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"

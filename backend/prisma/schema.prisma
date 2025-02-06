@@ -22,18 +22,20 @@ model Salon {
 }
 
 model Service {
-  id      String @id @default(uuid())
-  salonId String
-  name    String
-  price   Float
-  salon   Salon  @relation(fields: [salonId], references: [id])
+  id          String        @id @default(uuid())
+  salonId     String
+  name        String
+  price       Float
+  salon       Salon         @relation(fields: [salonId], references: [id])
+  Appointment Appointment[]
 }
 
 model Appointment {
   id              String   @id @default(uuid())
   salonId         String
+  serviceId       String   // Make this column required again
   customerName    String
-  serviceName     String
   appointmentTime DateTime
   salon           Salon    @relation(fields: [salonId], references: [id])
+  service         Service  @relation(fields: [serviceId], references: [id])
 }
