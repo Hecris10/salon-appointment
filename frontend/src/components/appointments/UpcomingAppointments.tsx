@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
 
+import { ApolloError } from "@apollo/client";
 import { Calendar, Clock, User } from "lucide-react";
-import { useTodayAppointments } from "../../hooks/useTodayAppointments";
+import { Appointment } from "../../types";
 import { formatTime } from "../../utilts/time";
 
-export default function UpcomingAppointments() {
-  const { data, loading, error } = useTodayAppointments();
-
+export default function UpcomingAppointments({
+  data,
+  loading,
+  error,
+}: {
+  data: Appointment[] | undefined;
+  loading: boolean;
+  error: ApolloError | undefined;
+}) {
   if (loading) {
     return (
       <div className="text-center py-8">Loading upcoming appointments...</div>

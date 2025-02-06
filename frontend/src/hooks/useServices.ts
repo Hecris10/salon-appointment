@@ -17,8 +17,6 @@ export const useServices = () => {
     fetchPolicy: "cache-and-network",
   });
 
-  console.log({ data });
-
   const [addService] = useMutation(ADD_SERVICE, {
     onCompleted: () => refetch(),
     onError: (error) => console.error("Error adding service: ", error),
@@ -44,7 +42,7 @@ export const useServices = () => {
     await addService({ variables: { salonId, name, price } });
   };
   const onUpdateService = async (service: Service) => {
-    await updateService({
+    return await updateService({
       variables: {
         id: service.id,
         name: service.name,
@@ -54,7 +52,7 @@ export const useServices = () => {
   };
 
   const onDeleteService = async (id: string) => {
-    await deleteService({ variables: { id } });
+    return await deleteService({ variables: { id } });
   };
 
   return {

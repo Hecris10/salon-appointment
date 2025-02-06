@@ -200,6 +200,9 @@ export const resolvers = {
       _: unknown,
       { id }: { id: string }
     ): Promise<boolean> => {
+      // Delete related appointments first
+      await prisma.appointment.deleteMany({ where: { serviceId: id } });
+      // Then delete the service
       await prisma.service.delete({ where: { id } });
       return true;
     },

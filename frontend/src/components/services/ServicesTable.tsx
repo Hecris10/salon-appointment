@@ -34,12 +34,6 @@ export default function ServicesTable() {
     setAddModalOpen(false);
   };
 
-  const handleUpdateService = async (updatedService: Service) => {
-    await updateService(updatedService);
-    setSelectedService(null);
-
-    setEditModalOpen(false);
-  };
 
   const handleDeleteService = (id: string) => {
     setSelectedService(null);
@@ -134,7 +128,7 @@ export default function ServicesTable() {
           <EditServiceModal
             isOpen={editModalOpen}
             onClose={() => setEditModalOpen(false)}
-            onUpdate={handleUpdateService}
+            onUpdate={updateService}
             service={selectedService}
           />
           <DeleteServiceModal

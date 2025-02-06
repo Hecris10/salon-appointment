@@ -1,21 +1,24 @@
 "use client";
 
+import { FetchResult } from "@apollo/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { useAppointments } from "../../../hooks/useAppointments";
 import { useServices } from "../../../hooks/useServices";
-import { NewAppointment } from "../../../types";
+import { Appointment, NewAppointment } from "../../../types";
 
 export default function AddAppointmentModal({
   isOpen,
   onClose,
+  addAppointment,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  addAppointment: (
+    appointment: NewAppointment,
+  ) => Promise<FetchResult<Appointment>>;
 }) {
   const { salonId } = useParams();
-  const { addAppointment } = useAppointments();
   const { data: services, loading: loadingServices } = useServices();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{
@@ -52,10 +55,8 @@ export default function AddAppointmentModal({
       });
       // Reset form fields
       // Close modal after successful submission
-      setTimeout(() => {
-        onClose();
-        setSubmitMessage(null);
-      }, 2000);
+
+      onClose();
     } catch (error: unknown) {
       console.error("Failed to book appointment:", error);
       setSubmitMessage({

@@ -1,10 +1,12 @@
+import { FetchResult } from "@apollo/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Service } from "../../../types";
 
 interface EditServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (service: Service) => void;
+  onUpdate: (service: Service) => Promise<FetchResult<Service>>;
   service: Service;
 }
 
@@ -14,23 +16,23 @@ export default function EditServiceModal({
   onUpdate,
   service,
 }: EditServiceModalProps) {
-  const [editedService, setEditedService] = useState<Service>(service);
+  const [error, setError] = useState<boolean>(false);
 
-  useEffect(() => {
-    setEditedService(service);
-  }, [service]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditedService((prev) => ({
-      ...prev,
-      [name]: name === "name" ? value : Number(value),
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate(editedService);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("name") as string;
+    const price = parseFloat(formData.get("price") as string);
+
+    const updatedService = { ...service, name, price };
+    try {
+      setError(false);
+      await onUpdate(updatedService);
+      onClose();
+    } catch (e) {
+      console.error("Error updating service: ", e);
+      setError(true);
+    }
   };
 
   return (
@@ -63,30 +65,12 @@ export default function EditServiceModal({
                   type="text"
                   id="name"
                   name="name"
-                  value={editedService.name}
-                  onChange={handleInputChange}
+                  defaultValue={service.name}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="duration"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  id="duration"
-                  name="duration"
-                  value={editedService.duration}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                  required
-                  min="0"
-                />
-              </div>
+
               <div>
                 <label
                   htmlFor="price"
@@ -98,8 +82,7 @@ export default function EditServiceModal({
                   type="number"
                   id="price"
                   name="price"
-                  value={editedService.price}
-                  onChange={handleInputChange}
+                  defaultValue={service.price}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                   required
                   min="0"
@@ -122,6 +105,11 @@ export default function EditServiceModal({
                 </button>
               </div>
             </form>
+            {error && (
+              <div className="text-red-600 text-sm mt-2">
+                An error occurred. Please try again.
+              </div>
+            )}
           </motion.div>
         </motion.div>
       )}

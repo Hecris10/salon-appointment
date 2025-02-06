@@ -1,73 +1,19 @@
 import { motion } from "framer-motion";
 import { Edit, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { useAppointments } from "../../hooks/useAppointments";
 import { Appointment } from "../../types";
 import { formatDate } from "../../utilts/time";
-import DeleteAppointmentModal from "../modals/appointment/DeleteAppointmentModal";
-import EditAppointmentModal from "../modals/appointment/EditAppointmentModal";
 
 export default function AppointmentsTable({
-  searchTerm,
-  serviceFilter,
-  dateFilter,
+  data,
+  handleDeleteClick,
+  handleEditClick,
 }: {
-  searchTerm: string;
-  dateFilter: string;
-  serviceFilter: string;
+  data: Appointment[];
+  handleEditClick: (appointment: Appointment) => void;
+  handleDeleteClick: (appointment: Appointment) => void;
 }) {
-  const { data, loading, error, deleteAppointment, updateAppointment } =
-    useAppointments({ searchTerm, date: dateFilter, service: serviceFilter });
-
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<Appointment | null>(null);
-
-  const handleDeleteClick = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setDeleteModalOpen(true);
-  };
-
-  const handleDeleteConfirm = async (appointmentId: string) => {
-    await deleteAppointment(appointmentId);
-    setDeleteModalOpen(false);
-  };
-
-  const handleEditClick = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setEditModalOpen(true);
-  };
-
-
-
-  if (loading) {
-    return <div className="text-center py-8">Loading appointments...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-8 text-red-600">{error.message}</div>;
-  }
-
   return (
     <>
-      {selectedAppointment && (
-        <>
-          <DeleteAppointmentModal
-            isOpen={deleteModalOpen}
-            onClose={() => setDeleteModalOpen(false)}
-            onDelete={() => handleDeleteConfirm(selectedAppointment.id)}
-            appointment={selectedAppointment}
-          />
-          <EditAppointmentModal
-            isOpen={editModalOpen}
-            onClose={() => setEditModalOpen(false)}
-            onUpdate={updateAppointment}
-            appointment={selectedAppointment}
-          />
-        </>
-      )}
-
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -86,14 +32,14 @@ export default function AppointmentsTable({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {!data || data?.getAppointments.length === 0 ? (
+          {!data || data?.length === 0 ? (
             <tr>
               <td className="px-6 py-4 whitespace-nowrap" colSpan={4}>
                 No appointments found.
               </td>
             </tr>
           ) : (
-            data?.getAppointments.map((appointment) => (
+            data?.map((appointment) => (
               <motion.tr
                 key={appointment.id}
                 initial={{ opacity: 0 }}

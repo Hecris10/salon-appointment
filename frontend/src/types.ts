@@ -53,12 +53,15 @@ export interface GetTodaysAppointmentsResponse {
   getTodaysAppointments: Appointment[];
 }
 
+
+export interface TodaysAppointmentsSummary {
+  numberOfAppointments: number;
+  numberOfServices: number;
+  expectedRevenue: number;
+}
+
 export interface GetTodaysAppointmentsSummaryResponse {
-  getTodaysAppointmentsSummary: {
-    numberOfAppointments: number;
-    numberOfServices: number;
-    expectedRevenue: number;
-  };
+  getTodaysAppointmentsSummary: TodaysAppointmentsSummary;
 }
 
 // GraphQL Mutation Responses

@@ -23,16 +23,22 @@ export const useAppointments = (queryParams?: {
       date: queryParams?.date,
       service: queryParams?.service,
     },
-    fetchPolicy: "no-cache",
+    fetchPolicy: "cache-and-network",
   });
 
+  console.log({ data: data?.getAppointments });
+
   const [addAppointment] = useMutation(ADD_APPOINTMENT, {
-    onCompleted: () => refetch(),
+    onCompleted: () => {
+      refetch();
+      console.log("Appointment added successfully");
+    },
     onError: (error) => console.error("Error adding appointment: ", error),
   });
 
   const [updateAppointment] = useMutation(UPDATE_APPOINTMENT, {
     onCompleted: () => refetch(),
+
     onError: (error) => console.error("Error updating appointment: ", error),
   });
 
