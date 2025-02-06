@@ -36,6 +36,7 @@ export default function SalonList() {
           location: updatedSalon.location,
         },
       });
+      setEditModalOpen(false);
       console.log("Updated salon with id: ", updatedSalon.id);
     } catch (error) {
       console.error("Error updating salon: ", error);
@@ -46,6 +47,7 @@ export default function SalonList() {
     try {
       await deleteSalon({ variables: { id } });
       console.log("Deleted salon with id: ", id);
+      setDeleteModalOpen(false);
     } catch (error) {
       console.error("Error deleting salon: ", error);
     }
