@@ -52,11 +52,13 @@ export const useAppointments = (queryParams?: {
   };
 
   const onUpdated = async (appointment: Appointment) => {
+   
     return await updateAppointment({
       variables: {
         id: appointment.id,
         customerName: appointment.customerName,
         appointmentTime: appointment.appointmentTime,
+        serviceId: appointment.serviceId,
       },
     });
   };

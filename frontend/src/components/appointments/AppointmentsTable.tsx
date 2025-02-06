@@ -39,7 +39,7 @@ export default function AppointmentsTable({
     setEditModalOpen(true);
   };
 
-  console.log({ data });
+
 
   if (loading) {
     return <div className="text-center py-8">Loading appointments...</div>;

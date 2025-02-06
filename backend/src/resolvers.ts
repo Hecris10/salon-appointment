@@ -239,6 +239,10 @@ export const resolvers = {
             ? new Date(appointmentTime)
             : undefined,
         },
+        include: {
+          salon: true,
+          service: true,
+        },
       });
     },
     deleteAppointment: async (

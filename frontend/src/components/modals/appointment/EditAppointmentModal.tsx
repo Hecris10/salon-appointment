@@ -1,12 +1,13 @@
+import { FetchResult } from "@apollo/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useParams } from "react-router";
+import { useState } from "react";
 import { useServices } from "../../../hooks/useServices";
 import { Appointment } from "../../../types";
 
 interface EditAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (appointment: Appointment) => void;
+  onUpdate: (appointment: Appointment) => Promise<FetchResult<Appointment>>;
   appointment: Appointment;
 }
 
@@ -16,11 +17,9 @@ export default function EditAppointmentModal({
   onUpdate,
   appointment,
 }: EditAppointmentModalProps) {
-  const { salonId } = useParams();
-  const { data: services, loading: loadingServices } = useServices(
-    salonId || "",
-  );
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: services, loading: loadingServices } = useServices();
+  const [error, setError] = useState<boolean>(false);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const name = (e.target as HTMLFormElement).customerName.value;
     const serviceId = (e.target as HTMLFormElement).serviceId.value;
@@ -34,7 +33,19 @@ export default function EditAppointmentModal({
       appointmentTime: new Date(time).toISOString(),
     };
 
-    onUpdate(updatedAppointment);
+    try {
+      setError(false);
+      const res = await onUpdate(updatedAppointment);
+      if (res.data) {
+        if (res.errors) {
+          throw new Error(res.errors[0].message);
+        }
+        onClose();
+      }
+    } catch (err: unknown) {
+      console.error(err);
+      setError(true);
+    }
   };
 
   return (
@@ -82,6 +93,7 @@ export default function EditAppointmentModal({
                 <select
                   name="serviceId"
                   required
+                  defaultValue={appointment.serviceId}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
                 >
                   {loadingServices ? (
@@ -115,7 +127,7 @@ export default function EditAppointmentModal({
                   type="datetime-local"
                   id="time"
                   name="time"
-                  defaultValue={new Date(appointment.appointmentTime)
+                  defaultValue={new Date(parseInt(appointment.appointmentTime))
                     .toISOString()
                     .slice(0, 16)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
@@ -138,6 +150,11 @@ export default function EditAppointmentModal({
                   Update
                 </button>
               </div>
+              {error && (
+                <div className="text-red-600 text-sm">
+                  There was an error updating the appointment. Please try again.
+                </div>
+              )}
             </form>
           </motion.div>
         </motion.div>

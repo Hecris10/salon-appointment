@@ -1,18 +1,15 @@
 import { motion } from "framer-motion";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useParams } from "react-router";
 import { useServices } from "../../hooks/useServices";
-import { Service } from "../../types";
+import { NewService, Service } from "../../types";
 import AddServiceModal from "../modals/service/AddServiceModal";
 import DeleteServiceModal from "../modals/service/DeleteServiceModal";
 import EditServiceModal from "../modals/service/EditServiceModal";
 
 export default function ServicesTable() {
-  const { salonId } = useParams();
-
   const { data, loading, error, deleteService, updateService, addService } =
-    useServices(salonId || "");
+    useServices();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -32,7 +29,7 @@ export default function ServicesTable() {
     setDeleteModalOpen(true);
   };
 
-  const handleAddService = async (newService: Omit<Service, "id">) => {
+  const handleAddService = async (newService: NewService) => {
     await addService(newService);
     setAddModalOpen(false);
   };
