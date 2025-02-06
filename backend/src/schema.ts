@@ -10,12 +10,15 @@ export const typeDefs = gql`
 
   type Service {
     id: ID!
+    salonId: String!
     name: String!
     price: Float!
+    salon: Salon!
   }
 
   type Appointment {
     id: ID!
+    salonId: String!
     customerName: String!
     serviceName: String!
     appointmentTime: String!
@@ -23,10 +26,25 @@ export const typeDefs = gql`
   }
 
   type Query {
+    getSalons: [Salon!]!
+    getSalon(id: ID!): Salon
+
+    getServices(salonId: ID!): [Service!]!
+    getService(id: ID!): Service
+
     getAppointments: [Appointment!]!
+    getAppointment(id: ID!): Appointment
   }
 
   type Mutation {
+    addSalon(name: String!, location: String!): Salon!
+    updateSalon(id: ID!, name: String, location: String): Salon!
+    deleteSalon(id: ID!): Boolean!
+
+    addService(salonId: ID!, name: String!, price: Float!): Service!
+    updateService(id: ID!, name: String, price: Float): Service!
+    deleteService(id: ID!): Boolean!
+
     addAppointment(
       salonId: String!
       customerName: String!
